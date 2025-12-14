@@ -1,16 +1,81 @@
-# React + Vite
+Setup Instructions
+=>Node.js v18+ recommended
+=>npm
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+INSTALLATION:
+# Clone the repository
+git clone <your-repo-url>
 
-Currently, two official plugins are available:
+# Navigate to project directory
+cd table-management
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Install dependencies
+npm install
 
-## React Compiler
+# Start development server
+npm run dev
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+# The application will be available at:
+http://localhost:5173
 
-## Expanding the ESLint configuration
+# Build for Production
+npm run build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Features Implemented
+=> High-performance table rendering using TanStack Table
+
+=> Virtualized rows with @tanstack/react-virtual for smooth scrolling
+
+=> Global search across multiple columns
+
+=> Column-level filters ,String match filters ,Numeric range (min/max) filters
+
+=> Sorting (ascending / descending)
+
+=> Client-side pagination
+
+=> CSV export of visible rows
+
+=> Debounced global search for better performance
+
+=> Empty state handling
+
+# Modular architecture
+=> Custom hooks
+=> Reusable components
+
+=> Responsive UI using Tailwind CSS
+
+# Dataset Choice & Reasoning
+The dataset represents music tracks, including:
+Track name ,Artist , Album ,Genre ,Popularity ,Tempo,Energy,Danceability,Duration,Release date,Explicit content flag
+
+# Why This Dataset?
+=> Contains mixed data types (string, number, boolean, date)
+=> Ideal for demonstrating: Sorting ,Filtering ,Numeric range filters
+=> Large enough to justify virtualization
+=> Realistic, domain-rich data similar to production use cases
+
+# Technology Decisions & Trade-offs
+React (with Vite)
+=> Fast development and HMR
+=> Modern tooling
+
+TanStack React Table
+=> Headless and highly flexible
+=> Excellent performance
+=> Full control over UI and behavior
+
+TanStack React Virtual
+=> Handles large datasets efficiently Smooth scrolling and reduced DOM size
+=> Smooth scrolling and reduced DOM size
+
+Tailwind CSS
+=> Rapid UI development
+=> Utility-first and consistent styling
+
+Client-side Pagination & Filtering
+=> Simple to implement
+=>  Fast for medium datasets
+
+Total Time Spent: 12 hours (Taken help from AI only whenever required)
