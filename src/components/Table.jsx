@@ -5,13 +5,18 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+//   getGlobalFilteredRowModel,
 } from "@tanstack/react-table";
+import { useDebounce } from "../hooks/useDebounce";
 import { useVirtualizer } from "@tanstack/react-virtual";
+
 const COL_WIDTH = 160;
+
 const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const parentRef = useRef(null);
+   const debouncedGlobalFilter = useDebounce(globalFilter);
   const genres = useMemo(
     () => [...new Set(data.map((d) => d.playlist_genre))],
     [data]
@@ -78,16 +83,31 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
       sortingFn: "basic",
     },
   ];
+const globalFilterFn = (row, columnId, filterValue) => {
+    const search = filterValue.toLowerCase();
+
+    return [
+      row.original.track_name,
+      row.original.track_artist,
+      row.original.track_album_name,
+      row.original.playlist_genre,
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(search);
+  };
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters, globalFilter },
+    state: { sorting, columnFilters, globalFilter:debouncedGlobalFilter },
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    globalFilterFn,
+    // getGlobalFilteredRowModel: getGlobalFilteredRowModel(),
   });
   const rows = table.getRowModel().rows;
 
@@ -101,7 +121,7 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
   return (
     <>
       <div className="flex gap-4 mb-4 flex-wrap">
-        ]{" "}
+        {" "}
         <input
           className="border p-2 rounded"
           placeholder="Search Track"
