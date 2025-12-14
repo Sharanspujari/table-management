@@ -5,22 +5,30 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-//   getGlobalFilteredRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { useDebounce } from "../hooks/useDebounce";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import Pagination from "./Pagination";
 
 const COL_WIDTH = 160;
 
 const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 25,
+  });
+
   const parentRef = useRef(null);
-   const debouncedGlobalFilter = useDebounce(globalFilter);
+  const debouncedGlobalFilter = useDebounce(globalFilter);
+
   const genres = useMemo(
     () => [...new Set(data.map((d) => d.playlist_genre))],
     [data]
   );
+
   const columns = [
     { accessorKey: "track_name", header: "Track", filterFn: "includesString" },
     {
@@ -83,7 +91,8 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
       sortingFn: "basic",
     },
   ];
-const globalFilterFn = (row, columnId, filterValue) => {
+
+  const globalFilterFn = (row, columnId, filterValue) => {
     const search = filterValue.toLowerCase();
 
     return [
@@ -100,14 +109,20 @@ const globalFilterFn = (row, columnId, filterValue) => {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters, globalFilter:debouncedGlobalFilter },
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter: debouncedGlobalFilter,
+      pagination,
+    },
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     globalFilterFn,
-    // getGlobalFilteredRowModel: getGlobalFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
   const rows = table.getRowModel().rows;
 
@@ -241,6 +256,11 @@ const globalFilterFn = (row, columnId, filterValue) => {
           })}
         </div>
       </div>
+      <Pagination
+        table={table}
+        pagination={pagination}
+        setPagination={setPagination}
+      />
     </>
   );
 };
