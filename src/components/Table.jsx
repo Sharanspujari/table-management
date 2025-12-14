@@ -1,33 +1,42 @@
-import React, { useRef } from "react";
+import React, {useState, useRef } from "react";
 import {
   flexRender,
   useReactTable,
   getCoreRowModel,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 const COL_WIDTH = 160;
 const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
+const [sorting, setSorting] = useState([]);
   const parentRef = useRef(null);
   const columns = [
     { accessorKey: "track_name", header: "Track" },
     { accessorKey: "track_artist", header: "Artist" },
     { accessorKey: "track_album_name", header: "Album" },
     { accessorKey: "playlist_genre", header: "Genre" },
-    { accessorKey: "track_popularity", header: "Popularity" },
+    {
+      accessorKey: "track_popularity",
+      header: "Popularity",
+      sortingFn: "basic",
+    },
 
     {
       accessorKey: "tempo",
       header: "Tempo (BPM)",
+      sortingFn: "basic",
     },
     {
       accessorKey: "energy",
       header: "Energy",
       cell: ({ getValue }) => getValue()?.toFixed(2),
+      sortingFn: "basic",
     },
     {
       accessorKey: "danceability",
       header: "Danceability",
       cell: ({ getValue }) => getValue()?.toFixed(2),
+      sortingFn: "basic",
     },
     {
       accessorKey: "duration_ms",
@@ -40,23 +49,28 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
           .padStart(2, "0");
         return `${min}:${sec}`;
       },
+      sortingFn: "basic",
     },
     {
       accessorKey: "track_album_release_date",
       header: "Release Date",
+      sortingFn: "basic",
     },
     {
       accessorKey: "explicit",
       header: "Explicit",
       cell: ({ getValue }) => (getValue() ? "Yes" : "No"),
+      sortingFn: "basic",
     },
   ];
 
   const table = useReactTable({
     data,
     columns,
-    state: { globalFilter },
+    state: { sorting, globalFilter },
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
   });
   const rows = table.getRowModel().rows;
 
@@ -68,24 +82,30 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
   });
 
   return (
-   <div
+    <div
       ref={parentRef}
       className="h-[500px] overflow-auto border rounded relative"
     >
       <div className="sticky top-0 z-20 bg-gray-100 border-b">
         <div className="flex">
-          {table.getHeaderGroups()[0].headers.map((header) => (
-            <div
-              key={header.id}
-              style={{ width: COL_WIDTH }}
-              className="p-2 font-semibold shrink-0 truncate"
-            >
-              {flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-            </div>
-          ))}
+          {table.getHeaderGroups()[0].headers.map((header) => {
+            const isSorted = header.column.getIsSorted();
+            return (
+              <div
+                key={header.id}
+                style={{ width: COL_WIDTH }}
+                 onClick={header.column.getToggleSortingHandler()}
+                className="p-2 font-semibold shrink-0 truncate"
+              >
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+                {isSorted === "asc" && "⬆"}
+                {isSorted === "desc" && "⬇"}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -118,10 +138,7 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
                   style={{ width: COL_WIDTH }}
                   className="p-2 shrink-0 truncate"
                 >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </div>
               ))}
             </div>
@@ -129,7 +146,6 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
         })}
       </div>
     </div>
-  
   );
 };
 
