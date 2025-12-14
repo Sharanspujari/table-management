@@ -8,7 +8,7 @@ const Pagination = ({ table, pagination, setPagination }) => {
     const pages = [];
     const delta = 1;
 
-    pages.push(0); // first page
+    pages.push(0); 
 
     for (
       let i = Math.max(1, currentPage - delta);
@@ -19,7 +19,7 @@ const Pagination = ({ table, pagination, setPagination }) => {
     }
 
     if (totalPages > 1) {
-      pages.push(totalPages - 1); // last page
+      pages.push(totalPages - 1);
     }
 
     return [...new Set(pages)];
@@ -53,7 +53,7 @@ const Pagination = ({ table, pagination, setPagination }) => {
 
       <div className="flex items-center gap-1">
         <button
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
@@ -70,10 +70,8 @@ const Pagination = ({ table, pagination, setPagination }) => {
 
               <button
                 onClick={() => table.setPageIndex(page)}
-                className={`px-3 py-1 border rounded ${
-                  page === currentPage
-                    ? "bg-blue-500 text-white"
-                    : ""
+                className={`px-3 py-1 border rounded cursor-pointer ${
+                  page === currentPage ? "bg-blue-500 text-white" : ""
                 }`}
               >
                 {page + 1}
@@ -83,7 +81,7 @@ const Pagination = ({ table, pagination, setPagination }) => {
         })}
 
         <button
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >

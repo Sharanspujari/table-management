@@ -3,7 +3,6 @@ import React from "react";
 const TableFilters = ({ table, genres }) => {
   return (
     <div className="flex gap-4 mb-4 flex-wrap">
-      {/* Track filter */}
       <input
         className="border p-2 rounded"
         placeholder="Search Track"
@@ -13,7 +12,6 @@ const TableFilters = ({ table, genres }) => {
         }
       />
 
-      {/* Artist filter */}
       <input
         className="border p-2 rounded"
         placeholder="Search Artist"
@@ -23,7 +21,6 @@ const TableFilters = ({ table, genres }) => {
         }
       />
 
-      {/* Genre filter */}
       <select
         className="border p-2 rounded"
         value={table.getColumn("playlist_genre")?.getFilterValue() ?? ""}
@@ -41,7 +38,6 @@ const TableFilters = ({ table, genres }) => {
         ))}
       </select>
 
-      {/* Popularity range filter */}
       <div className="flex gap-2">
         <input
           type="number"
@@ -50,10 +46,7 @@ const TableFilters = ({ table, genres }) => {
           onChange={(e) =>
             table
               .getColumn("track_popularity")
-              ?.setFilterValue((old = []) => [
-                e.target.value,
-                old?.[1],
-              ])
+              ?.setFilterValue((old = []) => [e.target.value, old?.[1]])
           }
         />
         <input
@@ -63,10 +56,7 @@ const TableFilters = ({ table, genres }) => {
           onChange={(e) =>
             table
               .getColumn("track_popularity")
-              ?.setFilterValue((old = []) => [
-                old?.[0],
-                e.target.value,
-              ])
+              ?.setFilterValue((old = []) => [old?.[0], e.target.value])
           }
         />
       </div>
