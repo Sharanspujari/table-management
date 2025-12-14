@@ -4,7 +4,10 @@ import {
   useReactTable,
   getCoreRowModel,
 } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+const COL_WIDTH = 160;
 const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
+  const parentRef = useRef(null);
   const columns = [
     { accessorKey: "track_name", header: "Track" },
     { accessorKey: "track_artist", header: "Artist" },
@@ -55,49 +58,78 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
     state: { globalFilter },
     getCoreRowModel: getCoreRowModel(),
   });
-  
-  return (
-    <div>
-      <div className="h-[500px] overflow-auto border">
-        <table className="w-full border-collapse">
-          <thead className="sticky top-0 bg-gray-100">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer p-2"
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {
-                      { asc: " ↑", desc: " ↓" }[
-                        header.column.getIsSorted() ?? ""
-                      ]
-                    }
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+  const rows = table.getRowModel().rows;
 
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 44,
+    overscan: 8,
+  });
+
+  return (
+   <div
+      ref={parentRef}
+      className="h-[500px] overflow-auto border rounded relative"
+    >
+      <div className="sticky top-0 z-20 bg-gray-100 border-b">
+        <div className="flex">
+          {table.getHeaderGroups()[0].headers.map((header) => (
+            <div
+              key={header.id}
+              style={{ width: COL_WIDTH }}
+              className="p-2 font-semibold shrink-0 truncate"
+            >
+              {flexRender(
+                header.column.columnDef.header,
+                header.getContext()
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div
+        style={{
+          height: virtualizer.getTotalSize(),
+          position: "relative",
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const row = rows[virtualRow.index];
+
+          return (
+            <div
+              key={row.id}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: 44,
+                transform: `translate3d(0, ${virtualRow.start}px, 0)`,
+                willChange: "transform",
+              }}
+              className="flex border-b bg-white"
+            >
+              {row.getVisibleCells().map((cell) => (
+                <div
+                  key={cell.id}
+                  style={{ width: COL_WIDTH }}
+                  className="p-2 shrink-0 truncate"
+                >
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
+  
   );
 };
 
