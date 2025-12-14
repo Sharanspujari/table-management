@@ -10,6 +10,7 @@ import {
 import { useDebounce } from "../hooks/useDebounce";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Pagination from "./Pagination";
+import ExportCSV from "./ExportCSV";
 
 const COL_WIDTH = 160;
 
@@ -190,7 +191,9 @@ const DataTable = ({ data, globalFilter, setGlobalFilter }) => {
                 ?.setFilterValue((old = []) => [old?.[0], e.target.value])
             }
           />
+          <ExportCSV rows={rows} />
         </div>
+        
       </div>
       <div
         ref={parentRef}
